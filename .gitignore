@@ -4,7 +4,9 @@
 *.dll
 *.so
 *.dylib
-
+*.csv
+*.txt
+/__MACOSX
 # Test binary, build with `go test -c`
 *.test
 
