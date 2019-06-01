@@ -17,6 +17,7 @@ func u() user {
 	//he, _ := bcrypt.GenerateFromPassword([]byte(e), 14)
 	hp, _ := bcrypt.GenerateFromPassword([]byte(p), 14)
 	m := user{e, hp}
+	
 	fmt.Println(hp)
 	return m
 }
