@@ -1,13 +1,26 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/marcospedro97/desafio_final_codenation/tree/creating-view-and-api-dir/api/files/compare"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	c, err := files.clientes()
+
+	db, err := sql.Open("postgres", "user=postgres dbname=mydb sslmode=disable")
+
 	if err != nil {
-		fmt.Println("err")
+		err = fmt.Errorf("error open db: %v", err)
 	}
+	schema := `CREATE TABLE place (
+		country text,
+		city text NULL,
+		telcode integer);`
+	result, err := db.Exec(schema)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("result ", result)
 }
