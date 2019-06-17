@@ -1,26 +1,43 @@
 package main
 
 import (
-	"database/sql"
+	"api/login"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-
-	db, err := sql.Open("postgres", "user=postgres dbname=mydb sslmode=disable")
-
-	if err != nil {
-		err = fmt.Errorf("error open db: %v", err)
+	const PORT = "8080"
+	r := mux.NewRouter()
+	http.Handle("/", r)
+	r.Handle("/log")
+	r.HandleFunc("/signup", loginPost).Methods("POST")
+	logger := log.New(os.Stderr, "logger: ", log.Lshortfile)
+	srv := &http.Server{
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		Addr:         ":" + PORT,
+		Handler:      context.ClearHandler(http.DefaultServeMux),
+		ErrorLog:     logger,
 	}
-	schema := `CREATE TABLE place (
-		country text,
-		city text NULL,
-		telcode integer);`
-	result, err := db.Exec(schema)
+
+	err := srv.ListenAndServe()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-	fmt.Println("result ", result)
+
+}
+func loginPost(w http.ResponseWriter, r *http.Request) {
+	email := r.FormValue("email")
+	pass := r.FormValue("pass")
+	ans := login.Login(email, pass)
+	if ans == true {
+		fmt.Println("TRUE")
+	}
 }
